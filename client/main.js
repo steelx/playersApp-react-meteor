@@ -1,41 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
+import {Tracker} from 'meteor/tracker';
 
-const PLAYERS = [
-    {id: 1, name: 'Ajinkya', score: 10},// <li>Ajinkya, (10)</li>
-    {id: 2, name: 'Sejal', score: 8},// <li>Sejal, (8)</li>
-    {id: 3, name: 'Ash', score: 1},
-    {id: 4, name: 'Steel', score: 0}
-];
+import { Players } from '../import/api/players';
+
 
 Meteor.startup(function _startup(){
-    let title = 'Players App Meteor+React';
-    let name = 'Ajinkya';
 
+    Tracker.autorun(function _ddpReady() {
+        let title = 'Players App Meteor+React';
+        let name = 'Ajinkya';
+        let playersData = Players.find().fetch();
 
-const Player = (props) => (<li>{props.name}, ({props.score})</li>);
+        const Player = (props) => (<li>{props.name}, ({props.score})</li>);
 
-    const PlayersList = () => {
-        return PLAYERS.map((p) => {
+        const PlayersList = () => {
+            return playersData.map((p) => {
+                return (
+                    <Player key={p.id} {...p} />
+                )
+            })
+        };
+
+        const App = () => {
             return (
-                <Player key={p.id} {...p} />
-            )
-        })
-    };
+                <div>
+                    <h2>{title}</h2>
+                    <p>Hello from {name}.</p>
 
-    const App = () => {
-        return (
-            <div>
-                <h2>{title}</h2>
-                <p>Hello from {name}.</p>
+                    <ul>
+                        <PlayersList />
+                    </ul>
+                </div>
+            );
+        }
 
-                <ul>
-                    <PlayersList />
-                </ul>
-            </div>
-        );
-    }
-
-    ReactDOM.render(<App />, document.getElementById('app'));
+        ReactDOM.render(<App />, document.getElementById('app'));
+    });
 });
