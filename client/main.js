@@ -13,14 +13,44 @@ Meteor.startup(function _startup(){
         let name = 'Ajinkya';
         let playersData = Players.find().fetch();
 
-        const Player = (props) => (<li>{props.name}, ({props.score})</li>);
+        const Player = (props) => {
+
+            const removePlayer = (_id) => {
+                Players.remove({_id});
+            };
+
+            return (
+                <li>
+                    {props.name}, ({props.score}) <button onClick={() => removePlayer(props._id)}>X</button>
+                </li>
+            )
+        };
 
         const PlayersList = () => {
             return playersData.map((p) => {
                 return (
-                    <Player key={p.id} {...p} />
+                    <Player key={p._id} {...p} />
                 )
             })
+        };
+
+        const AddPlayer = () => {
+
+            const insertToDb = (event) => {
+                event.preventDefault();
+                let playerName = event.target.playername.value;
+                if(playerName !== "" && typeof playerName !== "undefined") {
+                    // add to players
+                    Players.insert({name: playerName, score: 0});
+                }
+            };
+
+            return (
+                <form onSubmit={insertToDb}>
+                    <input type="text" placeholder="Player name" name="playername" />
+                    <button>ADD</button>
+                </form>
+            );
         };
 
         const App = () => {
@@ -32,6 +62,7 @@ Meteor.startup(function _startup(){
                     <ul>
                         <PlayersList />
                     </ul>
+                    <AddPlayer />
                 </div>
             );
         }
