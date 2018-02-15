@@ -21,7 +21,16 @@ Meteor.startup(function _startup(){
 
             return (
                 <li>
-                    {props.name}, ({props.score}) <button onClick={() => removePlayer(props._id)}>X</button>
+                    {props.name}, ({props.score})
+                    <button onClick={() => Players.update({_id: props._id}, {
+                        $inc: {score: 1}})
+                    }>+1</button>
+
+                    <button onClick={() => Players.update({_id: props._id}, {
+                        $inc: {score: -1}})
+                    }>-1</button>
+
+                    <button onClick={() => removePlayer(props._id)}>X</button>
                 </li>
             )
         };
